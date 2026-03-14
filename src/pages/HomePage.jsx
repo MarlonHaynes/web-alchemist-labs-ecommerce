@@ -1,27 +1,55 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getFeaturedProducts } from "../services/productService";
+import ProductGrid from "../components/ProductGrid";
+import SectionHeading from "../components/SectionHeading";
 
 export default function HomePage() {
-  return (
-    <section className="page-section">
-      <div className="hero">
-        <div className="hero-copy">
-          <span className="eyebrow">Modern Commerce Experience</span>
-          <h1>Build, Sell, and Scale with Web Alchemist Labs Ecommerce</h1>
-          <p>
-            A production-style ecommerce portfolio application built with React,
-            Firebase, Stripe, and modern admin workflows.
-          </p>
+  const [featuredProducts, setFeaturedProducts] = useState([]);
 
-          <div className="hero-actions">
-            <Link to="/products" className="btn btn-primary">
-              Shop Products
-            </Link>
-            <Link to="/admin" className="btn btn-secondary">
-              View Admin Area
-            </Link>
+  useEffect(() => {
+    async function loadFeaturedProducts() {
+      const data = await getFeaturedProducts(4);
+      setFeaturedProducts(data);
+    }
+
+    loadFeaturedProducts();
+  }, []);
+
+  return (
+    <div className="home-page">
+      <section className="page-section hero-section">
+        <div className="hero">
+          <div className="hero-copy">
+            <span className="eyebrow">Modern Commerce Experience</span>
+            <h1>Premium essentials built for a modern online store.</h1>
+            <p>
+              Web Alchemist Labs Ecommerce is a production-style portfolio
+              project focused on clean UI, scalable architecture, and real
+              ecommerce workflows.
+            </p>
+
+            <div className="hero-actions">
+              <Link to="/products" className="btn btn-primary">
+                Shop Collection
+              </Link>
+              <Link to="/dashboard" className="btn btn-secondary">
+                View Account
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section className="content-section">
+        <SectionHeading
+          eyebrow="Featured Products"
+          title="New arrivals curated for the storefront"
+          description="These products are currently loaded from a local product data source that will later be replaced by Firestore."
+        />
+
+        <ProductGrid products={featuredProducts} />
+      </section>
+    </div>
   );
 }

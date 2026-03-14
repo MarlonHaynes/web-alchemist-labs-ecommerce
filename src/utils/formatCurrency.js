@@ -1,3 +1,6 @@
 export function formatCurrency(value) {
-  return `$${Number(value).toFixed(2)}`;
+  return new Intl.NumberFormat("en-CA", {
+    style: "currency",
+    currency: "CAD",
+  }).format(value);
 }
