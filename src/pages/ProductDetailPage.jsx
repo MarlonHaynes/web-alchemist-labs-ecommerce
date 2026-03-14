@@ -4,12 +4,15 @@ import { getProductById } from "../services/productService";
 import { formatCurrency } from "../utils/formatCurrency";
 import LoadingState from "../components/LoadingState";
 import EmptyState from "../components/EmptyState";
+import { useCart } from "../context/CartContext";
 
 export default function ProductDetailPage() {
   const { id } = useParams();
 
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { addToCart } = useCart();
 
   useEffect(() => {
     async function loadProduct() {
@@ -70,6 +73,7 @@ export default function ProductDetailPage() {
               type="button"
               className="btn btn-primary"
               disabled={isOutOfStock}
+              onClick={() => addToCart(product)}
             >
               {isOutOfStock ? "Out of Stock" : "Add to Cart"}
             </button>

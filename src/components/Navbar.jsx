@@ -1,8 +1,11 @@
 import { NavLink } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
   const getNavLinkClass = ({ isActive }) =>
     isActive ? "nav-link active-link" : "nav-link";
+
+  const { cartCount } = useCart();
 
   return (
     <header className="site-header">
@@ -19,7 +22,7 @@ export default function Navbar() {
             Shop
           </NavLink>
           <NavLink to="/cart" className={getNavLinkClass}>
-            Cart
+            Cart ({cartCount})
           </NavLink>
           <NavLink to="/login" className={getNavLinkClass}>
             Login
