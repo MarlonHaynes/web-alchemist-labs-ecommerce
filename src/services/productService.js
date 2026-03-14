@@ -16,3 +16,8 @@ export async function getFeaturedProducts(limit = 4) {
 export async function getProductsByCategory(category) {
   return products.filter((item) => item.category === category);
 }
+
+export async function getAllCategories() {
+  const categories = [...new Set(products.map((item) => item.category))];
+  return categories;
+}

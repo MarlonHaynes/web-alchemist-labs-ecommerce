@@ -20,7 +20,7 @@ export default function ProductCard({ product }) {
           {isOutOfStock ? (
             <span className="stock-badge out">Out of Stock</span>
           ) : (
-            <span className="stock-badge in">In Stock</span>
+            <span className="stock-badge in">{product.stock} in stock</span>
           )}
         </div>
 
