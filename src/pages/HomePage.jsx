@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { getFeaturedProducts } from "../services/productService";
 import ProductGrid from "../components/ProductGrid";
 import SectionHeading from "../components/SectionHeading";
+import FirebaseStatus from "../components/FirebaseStatus";
 
 export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -42,6 +43,8 @@ export default function HomePage() {
       </section>
 
       <section className="content-section">
+        <FirebaseStatus />
+
         <SectionHeading
           eyebrow="Featured Products"
           title="New arrivals curated for the storefront"
