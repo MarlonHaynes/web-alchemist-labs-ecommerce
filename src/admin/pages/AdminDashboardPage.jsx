@@ -1,3 +1,8 @@
 export default function AdminDashboardPage() {
-  return <div>Admin Dashboard Page</div>;
+  return (
+    <section className="page-section">
+      <h1>Admin Dashboard</h1>
+      <p>This is the admin dashboard.</p>
+    </section>
+  );
 }

@@ -1,3 +1,8 @@
 export default function ProductDetailPage() {
-  return <div>Product Detail Page</div>;
+  return (
+    <section className="page-section">
+      <h1>Product Details</h1>
+      <p>This is the product detail page.</p>
+    </section>
+  );
 }
