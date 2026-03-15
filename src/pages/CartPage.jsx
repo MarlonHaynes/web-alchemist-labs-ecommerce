@@ -65,7 +65,7 @@ export default function CartPage() {
           </div>
 
           <Link to="/checkout" className="btn btn-primary">
-            Proceed to Checkout
+            Go to Checkout
           </Link>
         </div>
       </div>

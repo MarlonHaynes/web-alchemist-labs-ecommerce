@@ -68,24 +68,26 @@ export default function AppRouter() {
           </MainLayout>
         }
       />
-  <Route
-  path="/dashboard"
-  element={
-    <ProtectedRoute>
+     <Route
+       path="/dashboard"
+       element={
+     <ProtectedRoute>
       <MainLayout>
         <DashboardPage />
       </MainLayout>
     </ProtectedRoute>
   }
-/>
+   />
       <Route
-        path="/checkout"
-        element={
-          <MainLayout>
-            <CheckoutPage />
-          </MainLayout>
-        }
-      />
+     path="/checkout"
+     element={
+    <ProtectedRoute>
+      <MainLayout>
+        <CheckoutPage />
+      </MainLayout>
+    </ProtectedRoute>
+  }
+/>
       <Route
         path="/order-success"
         element={
