@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { formatCurrency } from "../utils/formatCurrency";
 import { savePendingCheckout } from "../utils/checkoutStorage";
+import { createCheckoutSession } from "../services/stripeService";
 
 export default function CheckoutPage() {
-  const navigate = useNavigate();
   const { cartItems, cartTotal } = useCart();
   const { currentUser } = useAuth();
 
@@ -20,6 +20,7 @@ export default function CheckoutPage() {
   });
 
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const itemCount = useMemo(() => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
@@ -34,7 +35,7 @@ export default function CheckoutPage() {
     }));
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     setErrorMessage("");
 
@@ -67,8 +68,19 @@ export default function CheckoutPage() {
       createdAt: new Date().toISOString(),
     };
 
-    savePendingCheckout(checkoutPayload);
-    navigate("/order-success");
+    try {
+      setIsSubmitting(true);
+
+      savePendingCheckout(checkoutPayload);
+
+      const { url } = await createCheckoutSession(checkoutPayload);
+
+      window.location.href = url;
+    } catch (error) {
+      setErrorMessage(error.message || "Unable to start Stripe checkout.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (!cartItems.length) {
@@ -155,8 +167,8 @@ export default function CheckoutPage() {
 
             {errorMessage ? <p className="form-error">{errorMessage}</p> : null}
 
-            <button type="submit" className="btn btn-primary">
-              Continue to Payment
+            <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+              {isSubmitting ? "Redirecting to Stripe..." : "Pay with Stripe"}
             </button>
           </form>
         </section>
