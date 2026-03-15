@@ -15,6 +15,7 @@ import AdminProductsPage from "../admin/pages/AdminProductsPage";
 import AdminOrdersPage from "../admin/pages/AdminOrdersPage";
 import AdminAddProductPage from "../admin/pages/AdminAddProductPage";
 import AdminEditProductPage from "../admin/pages/AdminEditProductPage";
+import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRouter() {
   return (
@@ -67,14 +68,16 @@ export default function AppRouter() {
           </MainLayout>
         }
       />
-      <Route
-        path="/dashboard"
-        element={
-          <MainLayout>
-            <DashboardPage />
-          </MainLayout>
-        }
-      />
+  <Route
+  path="/dashboard"
+  element={
+    <ProtectedRoute>
+      <MainLayout>
+        <DashboardPage />
+      </MainLayout>
+    </ProtectedRoute>
+  }
+/>
       <Route
         path="/checkout"
         element={
