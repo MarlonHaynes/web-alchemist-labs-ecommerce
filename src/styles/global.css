@@ -928,3 +928,10 @@ img {
     grid-template-columns: 1fr;
   }
 }
+
+.success-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
