@@ -26,11 +26,22 @@ export default function CartProvider({ children }) {
       const existing = prev.find((item) => item.id === product.id);
 
       if (existing) {
+        const nextQuantity = existing.quantity + 1;
+        const maxStock = product.stock ?? 0;
+
+        if (nextQuantity > maxStock) {
+          return prev;
+        }
+
         return prev.map((item) =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: nextQuantity }
             : item
         );
+      }
+
+      if ((product.stock ?? 0) < 1) {
+        return prev;
       }
 
       return [...prev, { ...product, quantity: 1 }];
@@ -42,12 +53,24 @@ export default function CartProvider({ children }) {
   }
 
   function updateQuantity(productId, quantity) {
-    if (quantity <= 0) return;
+    if (quantity <= 0) {
+      return;
+    }
 
     setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === productId ? { ...item, quantity } : item
-      )
+      prev.map((item) => {
+        if (item.id !== productId) {
+          return item;
+        }
+
+        const maxStock = item.stock ?? quantity;
+        const safeQuantity = quantity > maxStock ? maxStock : quantity;
+
+        return {
+          ...item,
+          quantity: safeQuantity,
+        };
+      })
     );
   }
 
@@ -55,10 +78,7 @@ export default function CartProvider({ children }) {
     setCartItems([]);
   }
 
-  const cartCount = cartItems.reduce(
-    (total, item) => total + item.quantity,
-    0
-  );
+  const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   const cartTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,

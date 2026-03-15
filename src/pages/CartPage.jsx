@@ -29,6 +29,7 @@ export default function CartPage() {
               <div className="cart-item-info">
                 <h3>{item.title}</h3>
                 <p>{formatCurrency(item.price)}</p>
+                <p className="checkout-item-meta">Available stock: {item.stock}</p>
 
                 <div className="cart-controls">
                   <input

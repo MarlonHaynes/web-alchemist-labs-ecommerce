@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import { formatCurrency } from "../utils/formatCurrency";
 import { savePendingCheckout } from "../utils/checkoutStorage";
 import { createCheckoutSession } from "../services/stripeService";
+import { validateCartStock } from "../services/productService";
 
 export default function CheckoutPage() {
   const { cartItems, cartTotal } = useCart();
@@ -54,6 +55,15 @@ export default function CheckoutPage() {
 
     if (hasEmptyField) {
       setErrorMessage("Please complete all checkout fields.");
+      return;
+    }
+
+    const stockValidation = await validateCartStock(cartItems);
+
+    if (!stockValidation.isValid) {
+      setErrorMessage(
+        "One or more cart items are out of stock or exceed available quantity. Please review your cart."
+      );
       return;
     }
 

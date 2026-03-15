@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { getApp } from "firebase/app";
+import { doc, getFirestore, runTransaction } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import LoadingState from "../components/LoadingState";
@@ -70,6 +72,37 @@ export default function OrderSuccessPage() {
           setIsLoading(false);
           return;
         }
+
+        const db = getFirestore(getApp());
+
+        await runTransaction(db, async (transaction) => {
+          for (const item of pendingCheckout.items) {
+            const productRef = doc(db, "products", item.id);
+            const productSnap = await transaction.get(productRef);
+
+            if (!productSnap.exists()) {
+              throw new Error(`Product not found: ${item.id}`);
+            }
+
+            const productData = productSnap.data();
+            const currentStock = productData.stock ?? 0;
+            const requestedQuantity = item.quantity ?? 0;
+
+            if (requestedQuantity <= 0) {
+              throw new Error(`Invalid quantity for product: ${item.id}`);
+            }
+
+            if (currentStock < requestedQuantity) {
+              throw new Error(
+                `Not enough stock for ${item.name}. Available: ${currentStock}, requested: ${requestedQuantity}.`
+              );
+            }
+
+            transaction.update(productRef, {
+              stock: currentStock - requestedQuantity,
+            });
+          }
+        });
 
         const orderPayload = {
           userId: currentUser.uid,
