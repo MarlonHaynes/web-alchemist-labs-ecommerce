@@ -1,29 +1,86 @@
+import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import LoadingState from "../components/LoadingState";
+import OrderHistoryList from "../components/OrderHistoryList";
+import { getOrdersByUserId } from "../services/orderService";
 
 export default function DashboardPage() {
   const { currentUser } = useAuth();
 
-  return (
-    <section className="page-section">
-      <h1>My Account</h1>
-      <p>Welcome to your customer dashboard.</p>
+  const [orders, setOrders] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
-      <div className="dashboard-info-grid">
-        <div className="info-card">
-          <span className="info-label">Logged In As</span>
-          <strong className="info-value">{currentUser?.email}</strong>
-        </div>
+  useEffect(() => {
+    async function loadOrders() {
+      try {
+        if (!currentUser?.uid) {
+          setOrders([]);
+          setIsLoading(false);
+          return;
+        }
 
-        <div className="info-card">
-          <span className="info-label">User ID</span>
-          <strong className="info-value">{currentUser?.uid}</strong>
-        </div>
+        const orderData = await getOrdersByUserId(currentUser.uid);
+        setOrders(orderData);
+      } catch (error) {
+        console.error("Dashboard orders load error:", error);
+        setErrorMessage(error.message || "Failed to load orders.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
 
-        <div className="info-card">
-          <span className="info-label">Account Status</span>
-          <strong className="info-value">Authenticated</strong>
-        </div>
+    loadOrders();
+  }, [currentUser]);
+
+  if (isLoading) {
+    return <LoadingState message="Loading your account..." />;
+  }
+
+  if (errorMessage) {
+    return (
+      <div className="dashboard-page">
+        <section className="page-section">
+          <h1>My Account</h1>
+          <p>{errorMessage}</p>
+        </section>
       </div>
-    </section>
+    );
+  }
+
+  return (
+    <div className="dashboard-page">
+      <section className="page-section">
+        <h1>My Account</h1>
+        <p>Welcome to your customer dashboard.</p>
+
+        <div className="dashboard-info-grid">
+          <div className="info-card">
+            <span className="info-label">Logged In As</span>
+            <strong className="info-value">{currentUser?.email}</strong>
+          </div>
+
+          <div className="info-card">
+            <span className="info-label">User ID</span>
+            <strong className="info-value">{currentUser?.uid}</strong>
+          </div>
+
+          <div className="info-card">
+            <span className="info-label">Completed Orders</span>
+            <strong className="info-value">{orders.length}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section className="dashboard-orders-section">
+        <div className="section-heading">
+          <span className="eyebrow">Order History</span>
+          <h2>Your recent orders</h2>
+          <p>Review completed purchases, totals, and order status updates.</p>
+        </div>
+
+        <OrderHistoryList orders={orders} />
+      </section>
+    </div>
   );
 }

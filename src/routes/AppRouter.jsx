@@ -16,6 +16,7 @@ import AdminOrdersPage from "../admin/pages/AdminOrdersPage";
 import AdminAddProductPage from "../admin/pages/AdminAddProductPage";
 import AdminEditProductPage from "../admin/pages/AdminEditProductPage";
 import ProtectedRoute from "./ProtectedRoute";
+import OrderDetailPage from "../pages/OrderDetailPage";
 
 export default function AppRouter() {
   return (
@@ -78,6 +79,16 @@ export default function AppRouter() {
     </ProtectedRoute>
   }
    />
+   <Route
+  path="/dashboard/orders/:id"
+  element={
+    <ProtectedRoute>
+      <MainLayout>
+        <OrderDetailPage />
+      </MainLayout>
+    </ProtectedRoute>
+  }
+/>
       <Route
      path="/checkout"
      element={

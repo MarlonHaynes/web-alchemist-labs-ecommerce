@@ -30,21 +30,28 @@ export default function OrderSuccessPage() {
   const pendingCheckoutRef = useRef(getPendingCheckout());
 
   useEffect(() => {
-    if (processedRef.current) {
-      return;
-    }
-
-    processedRef.current = true;
-
     async function saveCompletedOrder() {
+      if (processedRef.current) {
+        return;
+      }
+
       if (!sessionId) {
         setErrorMessage("Missing Stripe session ID.");
         setIsLoading(false);
         return;
       }
 
+      if (!currentUser) {
+        return;
+      }
+
+      processedRef.current = true;
+
       try {
-        const existingOrder = await getOrderByStripeSessionId(sessionId);
+        const existingOrder = await getOrderByStripeSessionId(
+          sessionId,
+          currentUser.uid
+        );
 
         if (existingOrder) {
           setSavedOrderId(existingOrder.id);
@@ -65,7 +72,7 @@ export default function OrderSuccessPage() {
         }
 
         const orderPayload = {
-          userId: currentUser?.uid || null,
+          userId: currentUser.uid,
           customerEmail: pendingCheckout.customer.email,
           customerName: pendingCheckout.customer.fullName,
           shippingAddress: {
@@ -93,7 +100,7 @@ export default function OrderSuccessPage() {
         clearCart();
       } catch (error) {
         console.error("Firestore save error:", error);
-        setErrorMessage("Failed to save order to Firestore.");
+        setErrorMessage(error?.message || "Failed to save order to Firestore.");
       } finally {
         setIsLoading(false);
       }
