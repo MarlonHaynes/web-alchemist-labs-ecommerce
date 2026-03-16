@@ -4,6 +4,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  limit,
   orderBy,
   query,
   serverTimestamp,
@@ -24,6 +25,21 @@ export async function createOrder(orderData) {
 
 export async function getOrders() {
   const q = query(ordersCollectionRef, orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map((docItem) => ({
+    id: docItem.id,
+    ...docItem.data(),
+  }));
+}
+
+export async function getRecentOrders(limitCount = 5) {
+  const q = query(
+    ordersCollectionRef,
+    orderBy("createdAt", "desc"),
+    limit(limitCount)
+  );
+
   const snapshot = await getDocs(q);
 
   return snapshot.docs.map((docItem) => ({
@@ -61,11 +77,10 @@ export async function getOrderById(orderId) {
   };
 }
 
-export async function getOrderByStripeSessionId(stripeSessionId, userId) {
+export async function getOrderByStripeSessionId(stripeSessionId) {
   const q = query(
     ordersCollectionRef,
-    where("stripeSessionId", "==", stripeSessionId),
-    where("userId", "==", userId)
+    where("stripeSessionId", "==", stripeSessionId)
   );
 
   const snapshot = await getDocs(q);

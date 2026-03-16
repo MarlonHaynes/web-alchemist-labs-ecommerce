@@ -1106,3 +1106,164 @@ img {
     justify-content: flex-start;
   }
 }
+
+.admin-dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.admin-stat-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.04);
+}
+
+.admin-stat-label {
+  display: block;
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.admin-stat-value {
+  display: block;
+  font-size: 2rem;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+
+.admin-stat-helper {
+  color: #4b5563;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.admin-dashboard-layout {
+  display: grid;
+  grid-template-columns: 1.3fr 0.7fr;
+  gap: 24px;
+}
+
+.admin-panel {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.04);
+}
+
+.admin-panel-heading {
+  margin-bottom: 20px;
+}
+
+.admin-panel-heading h2 {
+  font-size: 1.5rem;
+}
+
+.admin-recent-orders {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-order-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-order-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.admin-order-id {
+  display: block;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.admin-order-meta {
+  color: #6b7280;
+  line-height: 1.6;
+  font-size: 0.92rem;
+}
+
+.admin-order-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  text-align: right;
+}
+
+.admin-low-stock-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-low-stock-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-low-stock-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.low-stock-count {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+@media (max-width: 1100px) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-order-row,
+  .admin-low-stock-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-order-side {
+    align-items: flex-start;
+    text-align: left;
+  }
+}

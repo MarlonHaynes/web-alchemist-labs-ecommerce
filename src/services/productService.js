@@ -113,3 +113,8 @@ export async function decrementProductStockFromOrder(orderItems) {
     }
   });
 }
+
+export async function getLowStockProducts(threshold = 5) {
+  const allProducts = await getProducts();
+  return allProducts.filter((product) => (product.stock ?? 0) <= threshold);
+}
