@@ -1,11 +1,15 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
   orderBy,
   query,
   runTransaction,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { products as localProducts } from "../data/products";
@@ -46,6 +50,28 @@ export async function getProductById(productId) {
 
   const fallbackProduct = localProducts.find((item) => item.id === productId);
   return fallbackProduct || null;
+}
+
+export async function createProduct(productData) {
+  const productRef = doc(db, "products", productData.id);
+
+  await setDoc(productRef, {
+    ...productData,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function updateProduct(productId, productData) {
+  const productRef = doc(db, "products", productId);
+
+  await updateDoc(productRef, {
+    ...productData,
+  });
+}
+
+export async function deleteProduct(productId) {
+  const productRef = doc(db, "products", productId);
+  await deleteDoc(productRef);
 }
 
 export async function getFeaturedProducts(limit = 4) {
