@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 export default function Navbar() {
   const navigate = useNavigate();
   const { cartCount } = useCart();
-  const { currentUser, logout, isAuthenticated } = useAuth();
+  const { currentUser, logout, isAuthenticated, isAdmin } = useAuth();
 
   const getNavLinkClass = ({ isActive }) =>
     isActive ? "nav-link active-link" : "nav-link";
@@ -41,7 +41,17 @@ export default function Navbar() {
                 Account
               </NavLink>
 
-              <button type="button" className="nav-auth-button" onClick={handleLogout}>
+              {isAdmin ? (
+                <NavLink to="/admin" className={getNavLinkClass}>
+                  Admin
+                </NavLink>
+              ) : null}
+
+              <button
+                type="button"
+                className="nav-auth-button"
+                onClick={handleLogout}
+              >
                 Logout
               </button>
 
@@ -58,10 +68,6 @@ export default function Navbar() {
               </NavLink>
             </>
           )}
-
-          <NavLink to="/admin" className={getNavLinkClass}>
-            Admin
-          </NavLink>
         </nav>
       </div>
     </header>

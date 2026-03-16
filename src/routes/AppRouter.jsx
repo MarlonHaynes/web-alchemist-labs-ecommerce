@@ -18,6 +18,7 @@ import AdminEditProductPage from "../admin/pages/AdminEditProductPage";
 import ProtectedRoute from "./ProtectedRoute";
 import OrderDetailPage from "../pages/OrderDetailPage";
 import AdminOrderDetailPage from "../admin/pages/AdminOrderDetailPage";
+import AdminRoute from "./AdminRoute";
 
 export default function AppRouter() {
   return (
@@ -30,6 +31,7 @@ export default function AppRouter() {
           </MainLayout>
         }
       />
+
       <Route
         path="/products"
         element={
@@ -38,6 +40,7 @@ export default function AppRouter() {
           </MainLayout>
         }
       />
+
       <Route
         path="/products/:id"
         element={
@@ -46,6 +49,7 @@ export default function AppRouter() {
           </MainLayout>
         }
       />
+
       <Route
         path="/cart"
         element={
@@ -54,6 +58,7 @@ export default function AppRouter() {
           </MainLayout>
         }
       />
+
       <Route
         path="/login"
         element={
@@ -62,6 +67,7 @@ export default function AppRouter() {
           </MainLayout>
         }
       />
+
       <Route
         path="/register"
         element={
@@ -70,36 +76,40 @@ export default function AppRouter() {
           </MainLayout>
         }
       />
-     <Route
-       path="/dashboard"
-       element={
-     <ProtectedRoute>
-      <MainLayout>
-        <DashboardPage />
-      </MainLayout>
-    </ProtectedRoute>
-  }
-   />
-   <Route
-  path="/dashboard/orders/:id"
-  element={
-    <ProtectedRoute>
-      <MainLayout>
-        <OrderDetailPage />
-      </MainLayout>
-    </ProtectedRoute>
-  }
-/>
+
       <Route
-     path="/checkout"
-     element={
-    <ProtectedRoute>
-      <MainLayout>
-        <CheckoutPage />
-      </MainLayout>
-    </ProtectedRoute>
-  }
-/>
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <DashboardPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/dashboard/orders/:id"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <OrderDetailPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/checkout"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <CheckoutPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+
       <Route
         path="/order-success"
         element={
@@ -112,49 +122,66 @@ export default function AppRouter() {
       <Route
         path="/admin"
         element={
-          <MainLayout>
-            <AdminDashboardPage />
-          </MainLayout>
+          <AdminRoute>
+            <MainLayout>
+              <AdminDashboardPage />
+            </MainLayout>
+          </AdminRoute>
         }
       />
+
       <Route
         path="/admin/products"
         element={
-          <MainLayout>
-            <AdminProductsPage />
-          </MainLayout>
+          <AdminRoute>
+            <MainLayout>
+              <AdminProductsPage />
+            </MainLayout>
+          </AdminRoute>
         }
       />
+
       <Route
         path="/admin/products/new"
         element={
-          <MainLayout>
-            <AdminAddProductPage />
-          </MainLayout>
+          <AdminRoute>
+            <MainLayout>
+              <AdminAddProductPage />
+            </MainLayout>
+          </AdminRoute>
         }
       />
+
       <Route
         path="/admin/orders"
         element={
-          <MainLayout>
-            <AdminOrdersPage />
-          </MainLayout>
+          <AdminRoute>
+            <MainLayout>
+              <AdminOrdersPage />
+            </MainLayout>
+          </AdminRoute>
         }
       />
+
       <Route
-  path="/admin/orders/:id"
-  element={
-    <MainLayout>
-      <AdminOrderDetailPage />
-    </MainLayout>
-  }
-/>
+        path="/admin/orders/:id"
+        element={
+          <AdminRoute>
+            <MainLayout>
+              <AdminOrderDetailPage />
+            </MainLayout>
+          </AdminRoute>
+        }
+      />
+
       <Route
         path="/admin/products/edit/:id"
         element={
-          <MainLayout>
-            <AdminEditProductPage />
-          </MainLayout>
+          <AdminRoute>
+            <MainLayout>
+              <AdminEditProductPage />
+            </MainLayout>
+          </AdminRoute>
         }
       />
 

@@ -5,29 +5,22 @@ import OrderHistoryList from "../components/OrderHistoryList";
 import { getOrdersByUserId } from "../services/orderService";
 
 export default function DashboardPage() {
-  const { currentUser } = useAuth();
+  const { currentUser, userProfile } = useAuth();
 
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     async function loadOrders() {
-      try {
-        if (!currentUser?.uid) {
-          setOrders([]);
-          setIsLoading(false);
-          return;
-        }
-
-        const orderData = await getOrdersByUserId(currentUser.uid);
-        setOrders(orderData);
-      } catch (error) {
-        console.error("Dashboard orders load error:", error);
-        setErrorMessage(error.message || "Failed to load orders.");
-      } finally {
+      if (!currentUser?.uid) {
+        setOrders([]);
         setIsLoading(false);
+        return;
       }
+
+      const orderData = await getOrdersByUserId(currentUser.uid);
+      setOrders(orderData);
+      setIsLoading(false);
     }
 
     loadOrders();
@@ -35,17 +28,6 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return <LoadingState message="Loading your account..." />;
-  }
-
-  if (errorMessage) {
-    return (
-      <div className="dashboard-page">
-        <section className="page-section">
-          <h1>My Account</h1>
-          <p>{errorMessage}</p>
-        </section>
-      </div>
-    );
   }
 
   return (
@@ -61,8 +43,8 @@ export default function DashboardPage() {
           </div>
 
           <div className="info-card">
-            <span className="info-label">User ID</span>
-            <strong className="info-value">{currentUser?.uid}</strong>
+            <span className="info-label">Role</span>
+            <strong className="info-value">{userProfile?.role || "customer"}</strong>
           </div>
 
           <div className="info-card">
