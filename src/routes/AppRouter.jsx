@@ -17,6 +17,7 @@ import AdminAddProductPage from "../admin/pages/AdminAddProductPage";
 import AdminEditProductPage from "../admin/pages/AdminEditProductPage";
 import ProtectedRoute from "./ProtectedRoute";
 import OrderDetailPage from "../pages/OrderDetailPage";
+import AdminOrderDetailPage from "../admin/pages/AdminOrderDetailPage";
 
 export default function AppRouter() {
   return (
@@ -140,6 +141,14 @@ export default function AppRouter() {
           </MainLayout>
         }
       />
+      <Route
+  path="/admin/orders/:id"
+  element={
+    <MainLayout>
+      <AdminOrderDetailPage />
+    </MainLayout>
+  }
+/>
       <Route
         path="/admin/products/edit/:id"
         element={

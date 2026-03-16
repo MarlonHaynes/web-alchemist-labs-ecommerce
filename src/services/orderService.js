@@ -8,6 +8,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
@@ -75,6 +76,14 @@ export async function getOrderById(orderId) {
     id: snapshot.id,
     ...snapshot.data(),
   };
+}
+
+export async function updateOrderStatus(orderId, orderStatus) {
+  const orderRef = doc(db, "orders", orderId);
+
+  await updateDoc(orderRef, {
+    orderStatus,
+  });
 }
 
 export async function getOrderByStripeSessionId(stripeSessionId) {
