@@ -1,16 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { getApp } from "firebase/app";
-import { doc, getFirestore, runTransaction } from "firebase/firestore";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import LoadingState from "../components/LoadingState";
 import {
   createOrder,
   getOrderByStripeSessionId,
-  updateOrderAutomationStatus,
 } from "../services/orderService";
-import { triggerOrderConfirmationEmail } from "../services/zapierService";
 import { formatCurrency } from "../utils/formatCurrency";
 import {
   clearPendingCheckout,
@@ -35,9 +31,7 @@ export default function OrderSuccessPage() {
 
   useEffect(() => {
     async function saveCompletedOrder() {
-      if (processedRef.current) {
-        return;
-      }
+      if (processedRef.current) return;
 
       if (!sessionId) {
         setErrorMessage("Missing Stripe session ID.");
@@ -72,66 +66,32 @@ export default function OrderSuccessPage() {
           return;
         }
 
-        const db = getFirestore(getApp());
-
-        await runTransaction(db, async (transaction) => {
-          const productEntries = [];
-
-          for (const item of pendingCheckout.items) {
-            const productRef = doc(db, "products", item.id);
-            const productSnap = await transaction.get(productRef);
-
-            if (!productSnap.exists()) {
-              throw new Error(`Product not found: ${item.id}`);
-            }
-
-            const productData = productSnap.data();
-
-            productEntries.push({
-              item,
-              productRef,
-              productData,
-            });
-          }
-
-          for (const entry of productEntries) {
-            const currentStock = Number(entry.productData.stock ?? 0);
-            const requestedQuantity = Number(entry.item.quantity ?? 0);
-
-            if (requestedQuantity <= 0) {
-              throw new Error(`Invalid quantity for product: ${entry.item.id}`);
-            }
-
-            if (currentStock < requestedQuantity) {
-              throw new Error(
-                `Not enough stock for ${entry.item.title || entry.item.name || entry.item.id}. Available: ${currentStock}, requested: ${requestedQuantity}.`
-              );
-            }
-
-            transaction.update(entry.productRef, {
-              stock: currentStock - requestedQuantity,
-            });
-          }
-        });
-
         const orderPayload = {
           userId: currentUser.uid,
-          customerEmail: pendingCheckout.customer.email,
-          customerName: pendingCheckout.customer.fullName,
+          customerEmail: pendingCheckout.customer?.email || currentUser.email || "",
+          customerName:
+            pendingCheckout.customer?.fullName ||
+            currentUser.displayName ||
+            "Customer",
           shippingAddress: {
-            addressLine1: pendingCheckout.customer.addressLine1,
-            city: pendingCheckout.customer.city,
-            province: pendingCheckout.customer.province,
-            postalCode: pendingCheckout.customer.postalCode,
+            addressLine1: pendingCheckout.customer?.addressLine1 || "",
+            city: pendingCheckout.customer?.city || "",
+            province: pendingCheckout.customer?.province || "",
+            postalCode: pendingCheckout.customer?.postalCode || "",
           },
-          items: pendingCheckout.items,
-          totals: pendingCheckout.totals,
+          items: pendingCheckout.items || [],
+          totals: pendingCheckout.totals || {
+            subtotal: 0,
+            shipping: 0,
+            tax: 0,
+            total: 0,
+          },
           paymentStatus: "paid",
           orderStatus: "processing",
           stripeSessionId: sessionId,
           automation: {
             emailConfirmationStatus: "pending",
-            message: "Email automation has not run yet.",
+            message: "Order saved successfully.",
           },
         };
 
@@ -144,60 +104,6 @@ export default function OrderSuccessPage() {
 
         setSavedOrderId(newOrderId);
         setSuccessOrder(newSuccessOrder);
-
-        try {
-          const automationResult = await triggerOrderConfirmationEmail({
-            orderId: newOrderId,
-            stripeSessionId: sessionId,
-            customerName: pendingCheckout.customer.fullName,
-            customerEmail: pendingCheckout.customer.email,
-            itemsPurchased: pendingCheckout.items.map((item) => ({
-              id: item.id,
-              title: item.title,
-              quantity: item.quantity,
-              price: item.price,
-              lineTotal: item.quantity * item.price,
-            })),
-            totals: pendingCheckout.totals,
-            subject: "Order Confirmation - Web Alchemist Labs",
-            message:
-              "Thank you for your purchase. Your order has been received successfully.",
-          });
-
-          await updateOrderAutomationStatus(newOrderId, {
-            emailConfirmationStatus: automationResult.success
-              ? "sent"
-              : automationResult.skipped
-                ? "skipped"
-                : "failed",
-            message: automationResult.message,
-          });
-
-          setSuccessOrder((prev) => ({
-            ...prev,
-            automation: {
-              emailConfirmationStatus: automationResult.success
-                ? "sent"
-                : automationResult.skipped
-                  ? "skipped"
-                  : "failed",
-              message: automationResult.message,
-            },
-          }));
-        } catch (automationError) {
-          await updateOrderAutomationStatus(newOrderId, {
-            emailConfirmationStatus: "failed",
-            message: "Order saved, but Zapier email automation failed.",
-          });
-
-          setSuccessOrder((prev) => ({
-            ...prev,
-            automation: {
-              emailConfirmationStatus: "failed",
-              message: "Order saved, but Zapier email automation failed.",
-            },
-          }));
-        }
 
         saveLastCompletedOrderId(newOrderId);
         clearPendingCheckout();
@@ -233,8 +139,7 @@ export default function OrderSuccessPage() {
     <section className="page-section">
       <h1>Payment Successful</h1>
       <p>
-        Your Stripe test payment was completed and your order has been saved to
-        Firestore successfully.
+        Your payment was successful and your order has been received.
       </p>
 
       <div className="dashboard-info-grid">

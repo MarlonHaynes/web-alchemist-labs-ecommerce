@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { getFeaturedProducts } from "../services/productService";
 import ProductGrid from "../components/ProductGrid";
 import SectionHeading from "../components/SectionHeading";
-import FirebaseStatus from "../components/FirebaseStatus";
 
 export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -43,12 +42,10 @@ export default function HomePage() {
       </section>
 
       <section className="content-section">
-        <FirebaseStatus />
-
         <SectionHeading
           eyebrow="Featured Products"
           title="New arrivals curated for the storefront"
-          description="These products are currently loaded from a local product data source that will later be replaced by Firestore."
+          description="Explore a selection of products designed to showcase a polished storefront experience."
         />
 
         <ProductGrid products={featuredProducts} />
