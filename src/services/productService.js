@@ -6,7 +6,6 @@ import {
   getDocs,
   orderBy,
   query,
-  runTransaction,
   serverTimestamp,
   setDoc,
   updateDoc,
@@ -117,27 +116,28 @@ export async function validateCartStock(cartItems) {
 }
 
 export async function decrementProductStockFromOrder(orderItems) {
-  await runTransaction(db, async (transaction) => {
-    for (const orderItem of orderItems) {
-      const productRef = doc(db, "products", orderItem.id);
-      const productSnapshot = await transaction.get(productRef);
+  for (const orderItem of orderItems) {
+    const productRef = doc(db, "products", orderItem.id);
+    const productSnapshot = await getDoc(productRef);
 
-      if (!productSnapshot.exists()) {
-        throw new Error(`Product not found: ${orderItem.id}`);
-      }
-
-      const productData = productSnapshot.data();
-      const currentStock = productData.stock ?? 0;
-
-      if (currentStock < orderItem.quantity) {
-        throw new Error(`Insufficient stock for ${productData.title}`);
-      }
-
-      transaction.update(productRef, {
-        stock: currentStock - orderItem.quantity,
-      });
+    if (!productSnapshot.exists()) {
+      throw new Error(`Product not found: ${orderItem.id}`);
     }
-  });
+
+    const productData = productSnapshot.data();
+    const currentStock = Number(productData.stock ?? 0);
+    const quantityOrdered = Number(orderItem.quantity ?? 0);
+
+    if (currentStock < quantityOrdered) {
+      throw new Error(
+        `Insufficient stock for ${productData.title || orderItem.id}`
+      );
+    }
+
+    await updateDoc(productRef, {
+      stock: currentStock - quantityOrdered,
+    });
+  }
 }
 
 export async function getLowStockProducts(threshold = 5) {

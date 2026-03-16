@@ -86,6 +86,14 @@ export async function updateOrderStatus(orderId, orderStatus) {
   });
 }
 
+export async function updateOrderAutomationStatus(orderId, automation) {
+  const orderRef = doc(db, "orders", orderId);
+
+  await updateDoc(orderRef, {
+    automation,
+  });
+}
+
 export async function getOrderByStripeSessionId(stripeSessionId) {
   const q = query(
     ordersCollectionRef,

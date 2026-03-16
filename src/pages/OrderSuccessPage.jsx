@@ -8,7 +8,9 @@ import LoadingState from "../components/LoadingState";
 import {
   createOrder,
   getOrderByStripeSessionId,
+  updateOrderAutomationStatus,
 } from "../services/orderService";
+import { triggerOrderConfirmationEmail } from "../services/zapierService";
 import { formatCurrency } from "../utils/formatCurrency";
 import {
   clearPendingCheckout,
@@ -50,10 +52,7 @@ export default function OrderSuccessPage() {
       processedRef.current = true;
 
       try {
-        const existingOrder = await getOrderByStripeSessionId(
-          sessionId,
-          currentUser.uid
-        );
+        const existingOrder = await getOrderByStripeSessionId(sessionId);
 
         if (existingOrder) {
           setSavedOrderId(existingOrder.id);
@@ -76,6 +75,8 @@ export default function OrderSuccessPage() {
         const db = getFirestore(getApp());
 
         await runTransaction(db, async (transaction) => {
+          const productEntries = [];
+
           for (const item of pendingCheckout.items) {
             const productRef = doc(db, "products", item.id);
             const productSnap = await transaction.get(productRef);
@@ -85,20 +86,29 @@ export default function OrderSuccessPage() {
             }
 
             const productData = productSnap.data();
-            const currentStock = productData.stock ?? 0;
-            const requestedQuantity = item.quantity ?? 0;
+
+            productEntries.push({
+              item,
+              productRef,
+              productData,
+            });
+          }
+
+          for (const entry of productEntries) {
+            const currentStock = Number(entry.productData.stock ?? 0);
+            const requestedQuantity = Number(entry.item.quantity ?? 0);
 
             if (requestedQuantity <= 0) {
-              throw new Error(`Invalid quantity for product: ${item.id}`);
+              throw new Error(`Invalid quantity for product: ${entry.item.id}`);
             }
 
             if (currentStock < requestedQuantity) {
               throw new Error(
-                `Not enough stock for ${item.name}. Available: ${currentStock}, requested: ${requestedQuantity}.`
+                `Not enough stock for ${entry.item.title || entry.item.name || entry.item.id}. Available: ${currentStock}, requested: ${requestedQuantity}.`
               );
             }
 
-            transaction.update(productRef, {
+            transaction.update(entry.productRef, {
               stock: currentStock - requestedQuantity,
             });
           }
@@ -119,15 +129,76 @@ export default function OrderSuccessPage() {
           paymentStatus: "paid",
           orderStatus: "processing",
           stripeSessionId: sessionId,
+          automation: {
+            emailConfirmationStatus: "pending",
+            message: "Email automation has not run yet.",
+          },
         };
 
         const newOrderId = await createOrder(orderPayload);
 
-        setSavedOrderId(newOrderId);
-        setSuccessOrder({
+        const newSuccessOrder = {
           id: newOrderId,
           ...orderPayload,
-        });
+        };
+
+        setSavedOrderId(newOrderId);
+        setSuccessOrder(newSuccessOrder);
+
+        try {
+          const automationResult = await triggerOrderConfirmationEmail({
+            orderId: newOrderId,
+            stripeSessionId: sessionId,
+            customerName: pendingCheckout.customer.fullName,
+            customerEmail: pendingCheckout.customer.email,
+            itemsPurchased: pendingCheckout.items.map((item) => ({
+              id: item.id,
+              title: item.title,
+              quantity: item.quantity,
+              price: item.price,
+              lineTotal: item.quantity * item.price,
+            })),
+            totals: pendingCheckout.totals,
+            subject: "Order Confirmation - Web Alchemist Labs",
+            message:
+              "Thank you for your purchase. Your order has been received successfully.",
+          });
+
+          await updateOrderAutomationStatus(newOrderId, {
+            emailConfirmationStatus: automationResult.success
+              ? "sent"
+              : automationResult.skipped
+                ? "skipped"
+                : "failed",
+            message: automationResult.message,
+          });
+
+          setSuccessOrder((prev) => ({
+            ...prev,
+            automation: {
+              emailConfirmationStatus: automationResult.success
+                ? "sent"
+                : automationResult.skipped
+                  ? "skipped"
+                  : "failed",
+              message: automationResult.message,
+            },
+          }));
+        } catch (automationError) {
+          await updateOrderAutomationStatus(newOrderId, {
+            emailConfirmationStatus: "failed",
+            message: "Order saved, but Zapier email automation failed.",
+          });
+
+          setSuccessOrder((prev) => ({
+            ...prev,
+            automation: {
+              emailConfirmationStatus: "failed",
+              message: "Order saved, but Zapier email automation failed.",
+            },
+          }));
+        }
+
         saveLastCompletedOrderId(newOrderId);
         clearPendingCheckout();
         clearCart();
