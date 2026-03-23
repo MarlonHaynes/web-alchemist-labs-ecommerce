@@ -1,10 +1,7 @@
-const CHECKOUT_URL = import.meta.env.VITE_CHECKOUT_URL;
+const CHECKOUT_URL =
+  import.meta.env.VITE_CHECKOUT_URL || "/api/create-checkout-session";
 
 export async function createCheckoutSession(checkoutData) {
-  if (!CHECKOUT_URL) {
-    throw new Error("Missing VITE_CHECKOUT_URL in .env.local");
-  }
-
   const payload = {
     checkoutData,
     origin: window.location.origin,
