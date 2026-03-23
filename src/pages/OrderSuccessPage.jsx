@@ -136,60 +136,75 @@ export default function OrderSuccessPage() {
   }
 
   return (
-    <section className="page-section">
-      <h1>Payment Successful</h1>
-      <p>
-        Your payment was successful and your order has been received.
-      </p>
-
-      <div className="dashboard-info-grid">
-        <div className="info-card">
-          <span className="info-label">Order ID</span>
-          <strong className="info-value">{savedOrderId}</strong>
+    <section className="page-section order-success-page">
+      <div className="order-success-card">
+        <div className="order-success-header">
+          <span className="order-badge payment order-success-badge">Success</span>
+          <span className="eyebrow order-success-eyebrow">Order confirmed</span>
+          <h1>Payment Successful</h1>
+          <p className="order-success-description">
+            Your payment was successful and your order has been received.
+          </p>
         </div>
 
-        <div className="info-card">
-          <span className="info-label">Stripe Session ID</span>
-          <strong className="info-value">{sessionId}</strong>
+        <div className="order-success-grid">
+          <div className="info-card order-success-panel">
+            <span className="info-label order-success-panel-title">Confirmation Summary</span>
+            <div className="order-success-meta-list">
+              <div className="summary-row order-success-meta-item">
+                <span className="order-success-meta-label">Order ID</span>
+                <strong className="order-success-meta-value">{savedOrderId || "Not available"}</strong>
+              </div>
+              <div className="summary-row order-success-meta-item">
+                <span className="order-success-meta-label">Total</span>
+                <strong className="order-success-meta-value">{formatCurrency(successOrder?.totals?.total || 0)}</strong>
+              </div>
+              <div className="summary-row order-success-meta-item">
+                <span className="order-success-meta-label">Payment Status</span>
+                <strong className="order-success-meta-value">
+                  {successOrder?.paymentStatus === "paid" ? "Paid" : "Not available"}
+                </strong>
+              </div>
+            </div>
+          </div>
+
+          <div className="info-card order-success-panel">
+            <span className="info-label order-success-panel-title">Customer Details</span>
+            <div className="order-success-meta-list">
+              <div className="order-success-meta-item">
+                <span className="order-success-meta-label">Customer</span>
+                <strong className="order-success-meta-value">{successOrder?.customerName || "Not available"}</strong>
+              </div>
+              <div className="order-success-meta-item">
+                <span className="order-success-meta-label">Email</span>
+                <strong className="order-success-meta-value">{successOrder?.customerEmail || "Not available"}</strong>
+              </div>
+              <div className="order-success-meta-item">
+                <span className="order-success-meta-label">Shipping Address</span>
+                <p className="order-success-meta-value">
+                  {[
+                    successOrder?.shippingAddress?.addressLine1,
+                    successOrder?.shippingAddress?.city,
+                    successOrder?.shippingAddress?.province,
+                    successOrder?.shippingAddress?.postalCode,
+                  ]
+                    .filter(Boolean)
+                    .join(", ") || "Not available"}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="info-card">
-          <span className="info-label">Customer</span>
-          <strong className="info-value">
-            {successOrder?.customerName || "Not available"}
-          </strong>
+        <div className="order-success-actions">
+          <Link to="/dashboard" className="btn btn-primary">
+            View My Account
+          </Link>
+
+          <Link to="/products" className="btn btn-secondary">
+            Continue Shopping
+          </Link>
         </div>
-
-        <div className="info-card">
-          <span className="info-label">Email</span>
-          <strong className="info-value">
-            {successOrder?.customerEmail || "Not available"}
-          </strong>
-        </div>
-
-        <div className="info-card">
-          <span className="info-label">Total</span>
-          <strong className="info-value">
-            {formatCurrency(successOrder?.totals?.total || 0)}
-          </strong>
-        </div>
-
-        <div className="info-card">
-          <span className="info-label">Payment Status</span>
-          <strong className="info-value">
-            {successOrder?.paymentStatus === "paid" ? "Paid" : "Not available"}
-          </strong>
-        </div>
-      </div>
-
-      <div className="success-actions">
-        <Link to="/dashboard" className="btn btn-primary">
-          View My Account
-        </Link>
-
-        <Link to="/products" className="btn btn-secondary">
-          Continue Shopping
-        </Link>
       </div>
     </section>
   );

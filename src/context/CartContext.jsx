@@ -7,44 +7,44 @@ export function useCart() {
 }
 
 export default function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    const saved = localStorage.getItem("cartItems");
+    return saved ? JSON.parse(saved) : [];
+  });
 
   useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems));
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  function addToCart(product) {
+  function addToCart(product, quantity = 1) {
+    const requestedQuantity = Number(quantity);
+
+    if (!requestedQuantity || requestedQuantity < 1) {
+      return;
+    }
+
     setCartItems((prev) => {
       const existing = prev.find((item) => item.id === product.id);
+      const maxStock = product.stock ?? 0;
+
+      if (maxStock < 1) {
+        return prev;
+      }
 
       if (existing) {
-        const nextQuantity = existing.quantity + 1;
-        const maxStock = product.stock ?? 0;
-
-        if (nextQuantity > maxStock) {
-          return prev;
-        }
+        const nextQuantity = existing.quantity + requestedQuantity;
+        const safeQuantity = nextQuantity > maxStock ? maxStock : nextQuantity;
 
         return prev.map((item) =>
           item.id === product.id
-            ? { ...item, quantity: nextQuantity }
+            ? { ...item, quantity: safeQuantity }
             : item
         );
       }
 
-      if ((product.stock ?? 0) < 1) {
-        return prev;
-      }
+      const safeQuantity = requestedQuantity > maxStock ? maxStock : requestedQuantity;
 
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, quantity: safeQuantity }];
     });
   }
 
@@ -53,7 +53,9 @@ export default function CartProvider({ children }) {
   }
 
   function updateQuantity(productId, quantity) {
-    if (quantity <= 0) {
+    const parsedQuantity = Number(quantity);
+
+    if (!parsedQuantity || parsedQuantity <= 0) {
       return;
     }
 
@@ -63,8 +65,8 @@ export default function CartProvider({ children }) {
           return item;
         }
 
-        const maxStock = item.stock ?? quantity;
-        const safeQuantity = quantity > maxStock ? maxStock : quantity;
+        const maxStock = item.stock ?? parsedQuantity;
+        const safeQuantity = parsedQuantity > maxStock ? maxStock : parsedQuantity;
 
         return {
           ...item,

@@ -5,6 +5,8 @@ import PageHero from "../components/PageHero";
 import EmptyState from "../components/EmptyState";
 import ProductFilters from "../components/ProductFilters";
 
+const PRODUCTS_PER_PAGE = 6;
+
 export default function ProductsPage() {
   const [productList, setProductList] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -13,6 +15,7 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [stockFilter, setStockFilter] = useState("all");
   const [sortOption, setSortOption] = useState("newest");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     async function loadProductsPageData() {
@@ -71,6 +74,28 @@ export default function ProductsPage() {
     return results;
   }, [productList, searchTerm, selectedCategory, stockFilter, sortOption]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory, stockFilter, sortOption]);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE)
+  );
+
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+    const endIndex = startIndex + PRODUCTS_PER_PAGE;
+    return filteredProducts.slice(startIndex, endIndex);
+  }, [filteredProducts, currentPage]);
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [currentPage]);
+
   const inStockCount = useMemo(() => {
     return productList.filter((product) => product.stock > 0).length;
   }, [productList]);
@@ -84,6 +109,15 @@ export default function ProductsPage() {
     setSelectedCategory("all");
     setStockFilter("all");
     setSortOption("newest");
+    setCurrentPage(1);
+  }
+
+  function handlePreviousPage() {
+    setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
+  }
+
+  function handleNextPage() {
+    setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
   }
 
   return (
@@ -168,13 +202,50 @@ export default function ProductsPage() {
         <div className="catalog-content">
           <div className="catalog-toolbar">
             <p className="catalog-results-text">
-              Showing <strong>{filteredProducts.length}</strong> product
+              Showing <strong>{paginatedProducts.length}</strong> of{" "}
+              <strong>{filteredProducts.length}</strong> product
               {filteredProducts.length === 1 ? "" : "s"}
             </p>
           </div>
 
           {filteredProducts.length > 0 ? (
-            <ProductGrid products={filteredProducts} />
+            <>
+              <ProductGrid products={paginatedProducts} />
+
+              <div
+                className="catalog-pagination"
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "12px",
+                  marginTop: "24px",
+                  flexWrap: "wrap",
+                }}
+              >
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+
+                <span className="checkout-item-meta">
+                  Page {currentPage} of {totalPages}
+                </span>
+
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            </>
           ) : (
             <EmptyState
               title="No matching products"

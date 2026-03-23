@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import MainLayout from "../layouts/MainLayout";
 import HomePage from "../pages/HomePage";
 import ProductsPage from "../pages/ProductsPage";
@@ -20,179 +21,193 @@ import OrderDetailPage from "../pages/OrderDetailPage";
 import AdminOrderDetailPage from "../admin/pages/AdminOrderDetailPage";
 import AdminRoute from "./AdminRoute";
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 export default function AppRouter() {
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <MainLayout>
-            <HomePage />
-          </MainLayout>
-        }
-      />
+    <>
+      <ScrollToTop />
 
-      <Route
-        path="/products"
-        element={
-          <MainLayout>
-            <ProductsPage />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/products/:id"
-        element={
-          <MainLayout>
-            <ProductDetailPage />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/cart"
-        element={
-          <MainLayout>
-            <CartPage />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/login"
-        element={
-          <MainLayout>
-            <LoginPage />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/register"
-        element={
-          <MainLayout>
-            <RegisterPage />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
+      <Routes>
+        <Route
+          path="/"
+          element={
             <MainLayout>
-              <DashboardPage />
+              <HomePage />
             </MainLayout>
-          </ProtectedRoute>
-        }
-      />
+          }
+        />
 
-      <Route
-        path="/dashboard/orders/:id"
-        element={
-          <ProtectedRoute>
+        <Route
+          path="/products"
+          element={
             <MainLayout>
-              <OrderDetailPage />
+              <ProductsPage />
             </MainLayout>
-          </ProtectedRoute>
-        }
-      />
+          }
+        />
 
-      <Route
-        path="/checkout"
-        element={
-          <ProtectedRoute>
+        <Route
+          path="/products/:id"
+          element={
             <MainLayout>
-              <CheckoutPage />
+              <ProductDetailPage />
             </MainLayout>
-          </ProtectedRoute>
-        }
-      />
+          }
+        />
 
-      <Route
-        path="/order-success"
-        element={
-          <MainLayout>
-            <OrderSuccessPage />
-          </MainLayout>
-        }
-      />
-
-      <Route
-        path="/admin"
-        element={
-          <AdminRoute>
+        <Route
+          path="/cart"
+          element={
             <MainLayout>
-              <AdminDashboardPage />
+              <CartPage />
             </MainLayout>
-          </AdminRoute>
-        }
-      />
+          }
+        />
 
-      <Route
-        path="/admin/products"
-        element={
-          <AdminRoute>
+        <Route
+          path="/login"
+          element={
             <MainLayout>
-              <AdminProductsPage />
+              <LoginPage />
             </MainLayout>
-          </AdminRoute>
-        }
-      />
+          }
+        />
 
-      <Route
-        path="/admin/products/new"
-        element={
-          <AdminRoute>
+        <Route
+          path="/register"
+          element={
             <MainLayout>
-              <AdminAddProductPage />
+              <RegisterPage />
             </MainLayout>
-          </AdminRoute>
-        }
-      />
+          }
+        />
 
-      <Route
-        path="/admin/orders"
-        element={
-          <AdminRoute>
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <DashboardPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard/orders/:id"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <OrderDetailPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <CheckoutPage />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/order-success"
+          element={
             <MainLayout>
-              <AdminOrdersPage />
+              <OrderSuccessPage />
             </MainLayout>
-          </AdminRoute>
-        }
-      />
+          }
+        />
 
-      <Route
-        path="/admin/orders/:id"
-        element={
-          <AdminRoute>
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <MainLayout>
+                <AdminDashboardPage />
+              </MainLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/products"
+          element={
+            <AdminRoute>
+              <MainLayout>
+                <AdminProductsPage />
+              </MainLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/products/new"
+          element={
+            <AdminRoute>
+              <MainLayout>
+                <AdminAddProductPage />
+              </MainLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/orders"
+          element={
+            <AdminRoute>
+              <MainLayout>
+                <AdminOrdersPage />
+              </MainLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/orders/:id"
+          element={
+            <AdminRoute>
+              <MainLayout>
+                <AdminOrderDetailPage />
+              </MainLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/products/edit/:id"
+          element={
+            <AdminRoute>
+              <MainLayout>
+                <AdminEditProductPage />
+              </MainLayout>
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="*"
+          element={
             <MainLayout>
-              <AdminOrderDetailPage />
+              <NotFoundPage />
             </MainLayout>
-          </AdminRoute>
-        }
-      />
-
-      <Route
-        path="/admin/products/edit/:id"
-        element={
-          <AdminRoute>
-            <MainLayout>
-              <AdminEditProductPage />
-            </MainLayout>
-          </AdminRoute>
-        }
-      />
-
-      <Route
-        path="*"
-        element={
-          <MainLayout>
-            <NotFoundPage />
-          </MainLayout>
-        }
-      />
-    </Routes>
+          }
+        />
+      </Routes>
+    </>
   );
 }

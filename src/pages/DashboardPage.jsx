@@ -5,7 +5,7 @@ import OrderHistoryList from "../components/OrderHistoryList";
 import { getOrdersByUserId } from "../services/orderService";
 
 export default function DashboardPage() {
-  const { currentUser, userProfile } = useAuth();
+  const { currentUser } = useAuth();
 
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,15 +36,10 @@ export default function DashboardPage() {
         <h1>My Account</h1>
         <p>Welcome to your customer dashboard.</p>
 
-        <div className="dashboard-info-grid">
+        <div className="dashboard-info-grid dashboard-summary-grid">
           <div className="info-card">
             <span className="info-label">Logged In As</span>
             <strong className="info-value">{currentUser?.email}</strong>
-          </div>
-
-          <div className="info-card">
-            <span className="info-label">Role</span>
-            <strong className="info-value">{userProfile?.role || "customer"}</strong>
           </div>
 
           <div className="info-card">

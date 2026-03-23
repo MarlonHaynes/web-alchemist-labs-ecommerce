@@ -7,6 +7,8 @@ import { savePendingCheckout } from "../utils/checkoutStorage";
 import { createCheckoutSession } from "../services/stripeService";
 import { validateCartStock } from "../services/productService";
 
+const HST_RATE = 0.13;
+
 export default function CheckoutPage() {
   const { cartItems, cartTotal } = useCart();
   const { currentUser } = useAuth();
@@ -26,6 +28,9 @@ export default function CheckoutPage() {
   const itemCount = useMemo(() => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   }, [cartItems]);
+
+  const hstAmount = cartTotal * HST_RATE;
+  const finalTotal = cartTotal + hstAmount;
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -73,7 +78,8 @@ export default function CheckoutPage() {
       totals: {
         itemCount,
         subtotal: cartTotal,
-        total: cartTotal,
+        hst: hstAmount,
+        total: finalTotal,
       },
       createdAt: new Date().toISOString(),
     };
@@ -83,7 +89,7 @@ export default function CheckoutPage() {
 
       savePendingCheckout(checkoutPayload);
 
-      const { url } = await createCheckoutSession(checkoutPayload);
+      const url = await createCheckoutSession(checkoutPayload);
 
       window.location.href = url;
     } catch (error) {
@@ -213,8 +219,13 @@ export default function CheckoutPage() {
             </div>
 
             <div className="summary-row">
+              <span>HST (13%)</span>
+              <strong>{formatCurrency(hstAmount)}</strong>
+            </div>
+
+            <div className="summary-row">
               <span>Total</span>
-              <strong>{formatCurrency(cartTotal)}</strong>
+              <strong>{formatCurrency(finalTotal)}</strong>
             </div>
           </div>
         </aside>

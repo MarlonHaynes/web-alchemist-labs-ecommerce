@@ -32,7 +32,6 @@ export default function OrderDetailPage() {
           return;
         }
 
-        // Prevent viewing orders belonging to other users
         if (orderData.userId !== currentUser.uid) {
           setIsUnauthorized(true);
           return;
@@ -104,18 +103,60 @@ export default function OrderDetailPage() {
           <h2>Items Purchased</h2>
 
           <div className="order-detail-items">
-            {order.items?.map((item) => (
-              <div key={item.id} className="order-detail-item">
-                <div>
-                  <p className="checkout-item-title">{item.title}</p>
-                  <p className="checkout-item-meta">
-                    Qty: {item.quantity} × {formatCurrency(item.price)}
-                  </p>
-                </div>
+            {order.items?.map((item, index) => {
+              const productId = item.productId || item.id;
+              const canLinkToProduct = Boolean(productId);
 
-                <strong>{formatCurrency(item.quantity * item.price)}</strong>
-              </div>
-            ))}
+              const itemContent = (
+                <>
+                  <div className="order-detail-item-left">
+                    <div className="order-detail-item-image-wrap">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="order-detail-item-image"
+                        />
+                      ) : (
+                        <div className="order-detail-item-image-placeholder">
+                          No Image
+                        </div>
+                      )}
+                    </div>
+
+                    <div>
+                      <p className="checkout-item-title">{item.title}</p>
+                      <p className="checkout-item-meta">
+                        Qty: {item.quantity} × {formatCurrency(item.price)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <strong>{formatCurrency(item.quantity * item.price)}</strong>
+                </>
+              );
+
+              if (canLinkToProduct) {
+                return (
+                  <Link
+                    key={item.productId || item.id || index}
+                    to={`/products/${productId}`}
+                    className="order-detail-item order-detail-item-link"
+                  >
+                    {itemContent}
+                  </Link>
+                );
+              }
+
+              return (
+                <div
+                  key={item.productId || item.id || index}
+                  className="order-detail-item"
+                >
+                  {itemContent}
+                </div>
+              );
+            })}
           </div>
         </div>
 

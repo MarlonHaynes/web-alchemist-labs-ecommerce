@@ -1,20 +1,39 @@
+const CHECKOUT_URL = import.meta.env.VITE_CHECKOUT_URL;
+
 export async function createCheckoutSession(checkoutData) {
-  const response = await fetch("/api/create-checkout-session", {
+  if (!CHECKOUT_URL) {
+    throw new Error("Missing VITE_CHECKOUT_URL in .env.local");
+  }
+
+  const payload = {
+    checkoutData,
+    origin: window.location.origin,
+  };
+
+  const response = await fetch(CHECKOUT_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      checkoutData,
-      origin: window.location.origin,
-    }),
+    body: JSON.stringify(payload),
   });
 
-  const data = await response.json();
+  const text = await response.text();
+
+  let data = {};
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error("Server did not return valid JSON.");
+  }
 
   if (!response.ok) {
     throw new Error(data.error || "Failed to create checkout session.");
   }
 
-  return data;
+  if (!data.url) {
+    throw new Error("No checkout URL returned.");
+  }
+
+  return data.url;
 }

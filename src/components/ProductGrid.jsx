@@ -6,7 +6,7 @@ export default function ProductGrid({ products }) {
   }
 
   return (
-    <div className="product-grid">
+    <div className="product-grid product-grid-alt">
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}

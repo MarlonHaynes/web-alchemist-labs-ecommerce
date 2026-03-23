@@ -9,7 +9,7 @@ export default function HomePage() {
 
   useEffect(() => {
     async function loadFeaturedProducts() {
-      const data = await getFeaturedProducts(4);
+      const data = await getFeaturedProducts(6);
       setFeaturedProducts(data);
     }
 
@@ -49,6 +49,19 @@ export default function HomePage() {
         />
 
         <ProductGrid products={featuredProducts} />
+
+        {/* ✅ NEW BUTTON */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "32px",
+          }}
+        >
+          <Link to="/products" className="btn btn-primary">
+            View All Products
+          </Link>
+        </div>
       </section>
     </div>
   );
