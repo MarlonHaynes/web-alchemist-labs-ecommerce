@@ -1,0 +1,6 @@
+{
+  "/[[...slug]]": "pages/[[...slug]].js",
+  "/_app": "pages/_app.js",
+  "/_document": "pages/_document.js",
+  "/api/create-checkout-session": "pages/api/create-checkout-session.js"
+}
