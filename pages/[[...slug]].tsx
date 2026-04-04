@@ -1,7 +1,8 @@
-import dynamic from "next/dynamic";
-
-const ClientApp = dynamic(() => import("../src/ClientApp"), { ssr: false });
-
-export default function CatchAllPage() {
-  return <ClientApp />;
+export default function Home() {
+  return (
+    <main style={{ padding: "40px", fontFamily: "Arial, sans-serif" }}>
+      <h1>Web Alchemist Labs Ecommerce</h1>
+      <p>Next.js is running successfully.</p>
+    </main>
+  );
 }
