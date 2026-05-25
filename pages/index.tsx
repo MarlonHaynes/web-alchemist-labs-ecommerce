@@ -1,3 +1,9 @@
+import dynamic from "next/dynamic";
+
+const ClientApp = dynamic(() => import("../src/ClientApp"), {
+  ssr: false,
+});
+
 export default function Home() {
-  return <h1>Site works</h1>;
+  return <ClientApp />;
 }
