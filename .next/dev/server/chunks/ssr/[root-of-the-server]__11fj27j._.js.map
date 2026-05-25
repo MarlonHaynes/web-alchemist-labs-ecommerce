@@ -2,5 +2,5 @@
   "version": 3,
   "sources": [],
   "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/marlo/Desktop/All%20Projects/ecommerce/pages/%5B%5B...slug%5D%5D.tsx"],"sourcesContent":["export default function Home() {\r\n  return (\r\n    <main style={{ padding: \"40px\", fontFamily: \"Arial, sans-serif\" }}>\r\n      <h1>Web Alchemist Labs Ecommerce</h1>\r\n      <p>Next.js is running successfully.</p>\r\n    </main>\r\n  );\r\n}"],"names":["Home","style","padding","fontFamily"],"mappings":";;;;;;AAAe,SAASA;IACtB,qBACE,qKAAC;QAAKC,OAAO;YAAEC,SAAS;YAAQC,YAAY;QAAoB;;0BAC9D,qKAAC;0BAAG;;;;;;0BACJ,qKAAC;0BAAE;;;;;;;;;;;;AAGT"}}]
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/marlo/Desktop/All%20Projects/ecommerce/pages/%5B%5B...slug%5D%5D.tsx"],"sourcesContent":["'use client';\r\n\r\nimport dynamic from 'next/dynamic';\r\n\r\nconst ClientApp = dynamic(() => import('../src/ClientApp'), { ssr: false });\r\n\r\nexport default function Home() {\r\n  return <ClientApp />;\r\n}"],"names":["ClientApp","ssr","Home"],"mappings":";;;;;AAEA;;AAFA;;;AAIA,MAAMA,YAAY,IAAA,mIAAO,EAAC;;;;;;IAAoCC,KAAK;;AAEpD,SAASC;IACtB,qBAAO,qKAACF;;;;;AACV"}}]
 }
