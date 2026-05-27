@@ -6,20 +6,16 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Firebase](https://img.shields.io/badge/Firebase-Auth_%26_Firestore-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
 [![Stripe](https://img.shields.io/badge/Stripe-Checkout-635BFF?style=for-the-badge&logo=stripe&logoColor=white)](https://stripe.com/)
-[![License](https://img.shields.io/badge/License-Private-lightgrey?style=for-the-badge)](LICENSE)
-
-[![GitHub stars](https://img.shields.io/github/stars/WebAlchemistLabs/web-alchemist-labs-ecommerce?style=social)](https://github.com/WebAlchemistLabs/web-alchemist-labs-ecommerce/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/WebAlchemistLabs/web-alchemist-labs-ecommerce?style=social)](https://github.com/WebAlchemistLabs/web-alchemist-labs-ecommerce/network/members)
 
 A full-stack ecommerce storefront built as a production-style portfolio project. Customers browse the catalog, check out with Stripe, and track orders. Admins manage products, revenue, and fulfillment from a dedicated dashboard backed by Firebase.
 
 ---
 
-## Live demo
+## Live Demo
 
 **[https://webalchemistlabs-ecommerce.vercel.app/](https://webalchemistlabs-ecommerce.vercel.app/)**
 
-### Test credentials
+No signup required. Use the credentials below to explore every role immediately.
 
 | Role | Email | Password |
 |------|-------|----------|
@@ -30,47 +26,47 @@ A full-stack ecommerce storefront built as a production-style portfolio project.
 
 ---
 
-## System flow & screenshots
+## System Flow & Screenshots
 
 End-to-end flow from catalog data in Firestore through Stripe checkout to admin order fulfillment.
 
-### Firestore data model
+### Firestore Data Model
 
 Products, orders, and users live in Cloud Firestore. The catalog supports categories, pricing, stock, and image URLs.
 
 ![Firebase Firestore — products collection](./system%20flow/Firebase%20Database.jpg)
 
-### Stripe checkout
+### Stripe Checkout
 
 Authenticated customers are redirected to Stripe Checkout (CAD) with line items from the cart.
 
 ![Stripe hosted checkout](./system%20flow/Checkout%20form.jpg)
 
-### Order confirmation
+### Order Confirmation
 
 After successful payment, the app records the order in Firestore and shows a confirmation summary.
 
 ![Payment successful — order confirmed](./system%20flow/Order%20Success.jpg)
 
-### Admin dashboard
+### Admin Dashboard
 
 Overview of products, orders, revenue, inventory, recent activity, and low-stock alerts.
 
 ![Admin overview dashboard](./system%20flow/Admin%20Dashboard.jpg)
 
-### Product management
+### Product Management
 
 Full CRUD for the Firestore product catalog — add, edit, and delete with stock tracking.
 
 ![Manage catalog products](./system%20flow/Product%20Management.jpg)
 
-### Order management
+### Order Management
 
 List all customer orders with payment status, fulfillment state, and revenue KPIs.
 
 ![Manage customer orders](./system%20flow/Order%20Management%20System.jpg)
 
-### Order detail (admin)
+### Order Detail (Admin)
 
 Inspect line items, customer shipping details, and update order status.
 
@@ -78,7 +74,7 @@ Inspect line items, customer shipping details, and update order status.
 
 ---
 
-## Key features
+## Key Features
 
 ### Storefront
 - Product catalog with filtering and product detail pages
@@ -86,7 +82,7 @@ Inspect line items, customer shipping details, and update order status.
 - Featured products on the home page
 - Responsive layout with shared navigation and footer
 
-### Customer accounts
+### Customer Accounts
 - Email/password registration and login (Firebase Auth)
 - Protected dashboard with order history and order detail views
 - Checkout flow with shipping information and Stripe Checkout (CAD)
@@ -104,39 +100,39 @@ Inspect line items, customer shipping details, and update order status.
 
 ---
 
-## Tech stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|------------|
-| Framework | [Next.js](https://nextjs.org/) 16 |
-| UI | [React](https://react.dev/) 19, React Router 6 |
+| Framework | Next.js 16 |
+| UI | React 19, React Router 6 |
 | Language | TypeScript |
-| Backend / data | Firebase Auth, Firestore |
+| Backend / Data | Firebase Auth, Firestore |
 | Payments | Stripe Checkout |
-| Deployment | [Vercel](https://vercel.com/) (with SPA rewrites) |
+| Deployment | Vercel (with SPA rewrites) |
 
 The app uses Next.js for the build, API routes, and deployment, while client-side routing is handled by React Router inside a dynamically loaded client bundle (`ClientApp`).
 
 ---
 
-## Getting started
+## Getting Started
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) 18+ (LTS recommended)
+- Node.js 18+ (LTS recommended)
 - npm (included with Node.js)
-- A [Firebase](https://firebase.google.com/) project with Authentication and Firestore enabled
-- A [Stripe](https://stripe.com/) account (test keys are fine for local development)
+- A Firebase project with Authentication and Firestore enabled
+- A Stripe account (test keys are fine for local development)
 
-### 1. Clone and install
+### 1. Clone and Install
 
 ```bash
-git clone https://github.com/WebAlchemistLabs/web-alchemist-labs-ecommerce.git
+git clone https://github.com/MarlonHaynes/web-alchemist-labs-ecommerce.git
 cd web-alchemist-labs-ecommerce
 npm install
 ```
 
-### 2. Environment variables
+### 2. Environment Variables
 
 Create a `.env.local` file in the project root (this file is gitignored):
 
@@ -164,9 +160,9 @@ STRIPE_SECRET_KEY=sk_test_...
 
 Legacy `VITE_*` variable names are also supported via `next.config.mjs` for backward compatibility.
 
-### 3. Firebase setup
+### 3. Firebase Setup
 
-1. Create a Firebase project in the [Firebase Console](https://console.firebase.google.com/).
+1. Create a Firebase project in the Firebase Console.
 2. Enable **Email/Password** sign-in under Authentication.
 3. Create a **Firestore** database (start in test mode for development, then tighten rules before production).
 4. Copy your web app config into the `NEXT_PUBLIC_FIREBASE_*` variables above.
@@ -179,15 +175,15 @@ Legacy `VITE_*` variable names are also supported via `next.config.mjs` for back
 
 To seed sample products, use `src/firebase/seedProducts.ts` or add products through the admin UI at `/admin/products/new` after logging in as an admin.
 
-### 4. Stripe setup
+### 4. Stripe Setup
 
-1. Copy your **Secret key** from the [Stripe Dashboard](https://dashboard.stripe.com/apikeys) into `STRIPE_SECRET_KEY`.
+1. Copy your **Secret key** from the Stripe Dashboard into `STRIPE_SECRET_KEY`.
 2. For local testing, use test mode keys (`sk_test_...`).
 3. Checkout redirects to `/order-success?session_id={CHECKOUT_SESSION_ID}` on success and `/checkout` on cancel.
 
 Payments are processed in **CAD**.
 
-### 5. Run locally
+### 5. Run Locally
 
 ```bash
 npm run dev
@@ -208,36 +204,36 @@ Open [http://localhost:3000](http://localhost:3000). The Stripe checkout API rou
 
 ---
 
-## Project structure
+## Project Structure
 
 ```
 ecommerce/
 ├── pages/
-│   ├── _app.tsx              # Next.js app shell
-│   ├── index.tsx             # Entry — loads ClientApp (no SSR)
+│   ├── _app.tsx
+│   ├── index.tsx
 │   └── api/
-│       └── create-checkout-session.ts   # Stripe Checkout session API
+│       └── create-checkout-session.ts
 ├── src/
-│   ├── ClientApp.tsx         # BrowserRouter + providers
+│   ├── ClientApp.tsx
 │   ├── App.tsx
-│   ├── routes/               # AppRouter, ProtectedRoute, AdminRoute
-│   ├── pages/                # Storefront pages
-│   ├── admin/                # Admin dashboard and management
-│   ├── components/           # Shared UI components
-│   ├── context/              # Auth and cart state
-│   ├── services/             # Firebase, Stripe, orders, Zapier
-│   ├── firebase/             # Config and seed utilities
-│   ├── data/                 # Local product fallback data
-│   └── styles/               # Global CSS
-├── system flow/              # README screenshots
+│   ├── routes/
+│   ├── pages/
+│   ├── admin/
+│   ├── components/
+│   ├── context/
+│   ├── services/
+│   ├── firebase/
+│   ├── data/
+│   └── styles/
+├── system flow/
 ├── public/
 ├── next.config.mjs
-└── vercel.json               # SPA rewrites for client-side routes
+└── vercel.json
 ```
 
 ---
 
-## API routes
+## API Routes
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -245,7 +241,7 @@ ecommerce/
 
 ---
 
-## App routes
+## App Routes
 
 | Path | Access | Description |
 |------|--------|-------------|
@@ -269,7 +265,7 @@ Admin access is granted when the signed-in user's email appears in `NEXT_PUBLIC_
 
 ---
 
-## Checkout flow
+## Checkout Flow
 
 1. User adds items to the cart and proceeds to `/checkout` while signed in.
 2. Checkout data is stored locally, then the app calls `POST /api/create-checkout-session`.
@@ -282,7 +278,7 @@ Admin access is granted when the signed-in user's email appears in `NEXT_PUBLIC_
 
 ## Deployment
 
-The project is configured for [Vercel](https://vercel.com/):
+The project is configured for Vercel:
 
 1. Push the repository to GitHub (or connect your Git provider).
 2. Import the project in Vercel.
@@ -293,12 +289,23 @@ The project is configured for [Vercel](https://vercel.com/):
 
 ---
 
-## License
+## Contact
 
-Private project — see repository owner for usage terms.
+Available for full-time and contract opportunities.
+📧 [marlon.haynes.dev@gmail.com](mailto:marlon.haynes.dev@gmail.com)
 
 ---
 
-<p align="center">
-  Built by <a href="https://github.com/WebAlchemistLabs">Web Alchemist Labs</a>
-</p>
+## License
+
+Personal portfolio project — not licensed for reuse or redistribution.
+
+© 2026 Marlon Haynes. All rights reserved.
+
+---
+
+<div align="center">
+
+Built by Marlon Haynes • Web Alchemist Labs
+
+</div>
